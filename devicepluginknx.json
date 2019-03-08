@@ -15,14 +15,14 @@
                     "deviceIcon": "Gateway",
                     "setupMethod": "JustAdd",
                     "createMethods": ["user", "Discovery"],
-                    "interfaces": [ ],
+                    "interfaces": [ "connectable" ],
                     "basicTags": [ ],
                     "paramTypes": [
                         {
                             "id": "6eec90a3-936c-4885-830e-a2500426ed64",
                             "name": "address",
                             "displayName": "Server address",
-                            "type": "String",
+                            "type": "QString",
                             "inputType": "IPv4Address",
                             "defaultValue": "192.168.8.140"
                         },
@@ -37,9 +37,9 @@
                     "stateTypes":[
                         {
                             "id": "aa75257f-45cc-440a-990d-6f3a8f696883",
+                            "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
-                            "name": "connected",
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -59,8 +59,7 @@
                             "id": "69908c22-7fe1-4573-b3a2-32bf214d38c6",
                             "name": "knxAddress",
                             "displayName": "Knx address",
-                            "type": "String",
-                            "inputType": "String",
+                            "type": "QString",
                             "defaultValue": "0/0/0"
                         }
                     ],
