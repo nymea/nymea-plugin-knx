@@ -18,7 +18,7 @@ KnxTunnel::KnxTunnel(const QHostAddress &remoteAddress, QObject *parent) :
     connect(m_timer, &QTimer::timeout, this, &KnxTunnel::onTimeout);
 
     m_tunnel = new QKnxNetIpTunnel(this);
-    m_tunnel->setLocalAddress(m_remoteAddress);
+    m_tunnel->setLocalAddress(QHostAddress("192.168.8.138"));
     m_tunnel->setLocalPort(0);
 
     m_tunnel->setHeartbeatTimeout(1000);
