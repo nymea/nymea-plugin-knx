@@ -1,0 +1,3 @@
+[submodule "qtknx"]
+	path = qtknx
+	url = https://github.com/qt/qtknx.git

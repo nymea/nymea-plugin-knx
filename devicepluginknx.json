@@ -1,0 +1,85 @@
+{
+    "name": "Knx",
+    "displayName": "Knx",
+    "id": "cadef44b-223b-405f-a240-3e08fb9540ac",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "deviceClasses": [
+                {
+                    "id": "1322570a-cc4d-417c-90da-f24ccf59ebdb",
+                    "name": "knxNetIpServer",
+                    "displayName": "KNX NetIp Server",
+                    "deviceIcon": "Gateway",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["user", "Discovery"],
+                    "interfaces": [ ],
+                    "basicTags": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "6eec90a3-936c-4885-830e-a2500426ed64",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "String",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
+                            "id": "fab7c5dd-c5cf-445f-833b-cf3379672b14",
+                            "name": "port",
+                            "displayName": "Server port",
+                            "type": "uint",
+                            "defaultValue": 3671
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "aa75257f-45cc-440a-990d-6f3a8f696883",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "name": "connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "943e1329-cf5f-4759-94b3-141b6d3ce0ba",
+                    "name": "knxNetLight",
+                    "displayName": "KNX Light",
+                    "deviceIcon": "Light",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto", "user"],
+                    "interfaces": [ "light" ],
+                    "basicTags": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "69908c22-7fe1-4573-b3a2-32bf214d38c6",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "String",
+                            "inputType": "String",
+                            "defaultValue": "0/0/0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "dc82f8ca-6bb8-4fc6-b46c-2d6a6e6e6d2f",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
