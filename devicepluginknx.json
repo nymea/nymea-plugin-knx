@@ -49,18 +49,25 @@
                     "id": "943e1329-cf5f-4759-94b3-141b6d3ce0ba",
                     "name": "knxNetLight",
                     "displayName": "KNX Light",
-                    "deviceIcon": "Light",
                     "setupMethod": "JustAdd",
                     "createMethods": ["auto", "user"],
                     "interfaces": [ "light" ],
                     "basicTags": [ ],
                     "paramTypes": [
                         {
+                            "id": "acd8476b-57e8-49f8-9322-58d79c3119a5",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
                             "id": "69908c22-7fe1-4573-b3a2-32bf214d38c6",
                             "name": "knxAddress",
                             "displayName": "Knx address",
                             "type": "QString",
-                            "defaultValue": "0/0/0"
+                            "defaultValue": "0/0/3"
                         }
                     ],
                     "stateTypes": [
@@ -69,6 +76,7 @@
                             "name": "power",
                             "displayName": "Power",
                             "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true

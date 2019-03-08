@@ -23,6 +23,8 @@
 #include "plugininfo.h"
 #include "devicepluginknx.h"
 
+#include <QKnxAddress>
+
 DevicePluginKnx::DevicePluginKnx()
 {
 
@@ -74,6 +76,18 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const Action &action)
 {
     qCDebug(dcKnx()) << "Executing action for device" << device->name() << action.actionTypeId().toString() << action.params();
+
+    if (device->deviceClassId() == knxNetLightDeviceClassId) {
+        if (action.actionTypeId() == knxNetLightPowerActionTypeId) {
+            foreach (KnxTunnel *tunnel, m_tunnels.keys()) {
+                if (tunnel->remoteAddress().toString() == device->paramValue(knxNetLightDeviceAddressParamTypeId).toString()) {
+                    tunnel->switchLight(QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxNetLightDeviceKnxAddressParamTypeId).toString()),
+                                        action.param(knxNetLightPowerActionPowerParamTypeId).value().toBool());
+                }
+            }
+        }
+
+    }
 
     return DeviceManager::DeviceErrorNoError;
 }

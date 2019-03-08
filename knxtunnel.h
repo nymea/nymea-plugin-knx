@@ -21,6 +21,8 @@ public:
     void connectTunnel();
     void disconnectTunnel();
 
+    void switchLight(const QKnxAddress &knxAddress, bool power);
+
 private:
     QHostAddress m_remoteAddress;
     QKnxNetIpTunnel *m_tunnel = nullptr;
@@ -31,7 +33,6 @@ private:
 
     void collectAddress(const QKnxAddress &address);
     void printFrame(const QKnxLinkLayerFrame &frame);
-    void switchLight(const QKnxAddress &knxAddress, bool power);
 
 signals:
     void connectedChanged();
