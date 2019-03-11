@@ -30,11 +30,13 @@ bool KnxServerDiscovery::startDisovery()
                 QKnxNetIpServerDiscoveryAgent *discovery = new QKnxNetIpServerDiscoveryAgent(this);
                 discovery->setLocalAddress(addressEntry.ip());
                 discovery->setLocalPort(0);
-                discovery->setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Multicast);
+                discovery->setSearchFrequency(60);
+                discovery->setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
                 discovery->setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1 | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
 
                 m_runningDiscoveryAgents.append(discovery);
                 connect(discovery, &QKnxNetIpServerDiscoveryAgent::finished, this, &KnxServerDiscovery::onDiscoveryAgentFinished);
+                connect(discovery, &QKnxNetIpServerDiscoveryAgent::errorOccurred, this, &KnxServerDiscovery::onDiscoveryAgentErrorOccured);
 
                 // Start the discovery
                 discovery->start(m_discoveryTimeout);
@@ -43,6 +45,12 @@ bool KnxServerDiscovery::startDisovery()
     }
 
     return true;
+}
+
+void KnxServerDiscovery::onDiscoveryAgentErrorOccured(QKnxNetIpServerDiscoveryAgent::Error error)
+{
+    QKnxNetIpServerDiscoveryAgent *discovery = static_cast<QKnxNetIpServerDiscoveryAgent *>(sender());
+    qCDebug(dcKnx()) << "Discovery error occured" << discovery->localAddress().toString() << error << discovery->errorString();
 }
 
 void KnxServerDiscovery::onDiscoveryAgentFinished()

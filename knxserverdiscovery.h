@@ -14,7 +14,7 @@ public:
     bool startDisovery();
 
 private:
-    int m_discoveryTimeout = 5000;
+    int m_discoveryTimeout = 10000;
     QList<QKnxNetIpServerDiscoveryAgent *> m_runningDiscoveryAgents;
     QList<QKnxNetIpServerInfo> m_discoveredServers;
 
@@ -22,6 +22,7 @@ signals:
     void discoveryFinished();
 
 private slots:
+    void onDiscoveryAgentErrorOccured(QKnxNetIpServerDiscoveryAgent::Error error);
     void onDiscoveryAgentFinished();
 
 
