@@ -53,8 +53,6 @@ private:
     KnxServerDiscovery *m_discovery = nullptr;
     QHash<KnxTunnel *, Device *> m_tunnels;
 
-    QHostAddress getLocalAddress(const QHostAddress &remoteAddress);
-
 private slots:
     void onDiscoveryFinished();
     void onTunnelConnectedChanged();
