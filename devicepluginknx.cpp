@@ -113,7 +113,25 @@ void DevicePluginKnx::onDiscoveryFinished()
 {
     qCDebug(dcKnx()) << "Discovery finished.";
 
+    QList<DeviceDescriptor> deviceDescriptors;
+    foreach (const QKnxNetIpServerInfo &serverInfo, m_discovery->discoveredServers()) {
+        qCDebug(dcKnx()) << "Found server:" << QString("%1:%2").arg(serverInfo.controlEndpointAddress().toString()).arg(serverInfo.controlEndpointPort());
+        KnxServerDiscovery::printServerInfo(serverInfo);
+        DeviceDescriptor descriptor(knxNetIpServerDeviceClassId, "KNX NetIp Server", QString("%1:%2").arg(serverInfo.controlEndpointAddress().toString()).arg(serverInfo.controlEndpointPort()));
+        ParamList params;
+        params.append(Param(knxNetIpServerDeviceAddressParamTypeId, serverInfo.controlEndpointAddress().toString()));
+        params.append(Param(knxNetIpServerDevicePortParamTypeId, serverInfo.controlEndpointPort()));
+        descriptor.setParams(params);
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(knxNetIpServerDeviceAddressParamTypeId).toString() == serverInfo.controlEndpointAddress().toString()) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
+        deviceDescriptors.append(descriptor);
+    }
 
+    emit devicesDiscovered(knxNetIpServerDeviceClassId, deviceDescriptors);
 }
 
 

@@ -11,10 +11,14 @@ class KnxServerDiscovery : public QObject
     Q_OBJECT
 public:
     explicit KnxServerDiscovery(QObject *parent = nullptr);
-    bool startDisovery();
+
+    QList<QKnxNetIpServerInfo> discoveredServers() const;
+
+    static QString serviceFamilyToString(QKnx::NetIp::ServiceFamily id);
+    static void printServerInfo(const QKnxNetIpServerInfo &serverInfo);
 
 private:
-    int m_discoveryTimeout = 10000;
+    int m_discoveryTimeout = 5000;
     QList<QKnxNetIpServerDiscoveryAgent *> m_runningDiscoveryAgents;
     QList<QKnxNetIpServerInfo> m_discoveredServers;
 
@@ -27,6 +31,8 @@ private slots:
 
 
 public slots:
+    bool startDisovery();
+
 };
 
 #endif // KNXSERVERDISCOVERY_H
