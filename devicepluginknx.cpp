@@ -84,7 +84,6 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 
     if (device->deviceClassId() == knxNetIpServerDeviceClassId) {
         QHostAddress remoteAddress = QHostAddress(device->paramValue(knxNetIpServerDeviceAddressParamTypeId).toString());
-        QHostAddress localAddress = getLocalAddress(remoteAddress);
         KnxTunnel *tunnel = new KnxTunnel(remoteAddress, this);
         m_tunnels.insert(tunnel, device);
     }
