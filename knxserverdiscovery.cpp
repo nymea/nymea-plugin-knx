@@ -30,6 +30,9 @@ bool KnxServerDiscovery::startDisovery()
                 QKnxNetIpServerDiscoveryAgent *discovery = new QKnxNetIpServerDiscoveryAgent(this);
                 discovery->setLocalAddress(addressEntry.ip());
                 discovery->setLocalPort(0);
+                discovery->setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
+                discovery->setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1 | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
+
                 m_runningDiscoveryAgents.append(discovery);
                 connect(discovery, &QKnxNetIpServerDiscoveryAgent::finished, this, &KnxServerDiscovery::onDiscoveryAgentFinished);
 
