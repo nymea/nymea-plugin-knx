@@ -24,6 +24,7 @@
 #include "devicepluginknx.h"
 
 #include <QKnxAddress>
+#include <QNetworkInterface>
 
 DevicePluginKnx::DevicePluginKnx()
 {
@@ -32,7 +33,8 @@ DevicePluginKnx::DevicePluginKnx()
 
 void DevicePluginKnx::init()
 {
-    // Initialize/create objects
+    m_discovery = new KnxServerDiscovery(this);
+    connect(m_discovery, &KnxServerDiscovery::discoveryFinished, this, &DevicePluginKnx::onDiscoveryFinished);
 }
 
 void DevicePluginKnx::startMonitoringAutoDevices()
@@ -61,12 +63,29 @@ void DevicePluginKnx::deviceRemoved(Device *device)
     }
 }
 
+DeviceManager::DeviceError DevicePluginKnx::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+{
+    Q_UNUSED(params)
+
+    if (deviceClassId == knxNetIpServerDeviceClassId) {
+        if (!m_discovery->startDisovery()) {
+            return DeviceManager::DeviceErrorDeviceInUse;
+        } else {
+            return DeviceManager::DeviceErrorAsync;
+        }
+    }
+
+    return DeviceManager::DeviceErrorNoError;
+}
+
 DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 {
     qCDebug(dcKnx()) << "Setup device" << device->name() << device->params();
 
     if (device->deviceClassId() == knxNetIpServerDeviceClassId) {
-        KnxTunnel *tunnel = new KnxTunnel(QHostAddress(device->paramValue(knxNetIpServerDeviceAddressParamTypeId).toString()), this);
+        QHostAddress remoteAddress = QHostAddress(device->paramValue(knxNetIpServerDeviceAddressParamTypeId).toString());
+        QHostAddress localAddress = getLocalAddress(remoteAddress);
+        KnxTunnel *tunnel = new KnxTunnel(remoteAddress, this);
         m_tunnels.insert(tunnel, device);
     }
 
@@ -81,16 +100,24 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         if (action.actionTypeId() == knxNetLightPowerActionTypeId) {
             foreach (KnxTunnel *tunnel, m_tunnels.keys()) {
                 if (tunnel->remoteAddress().toString() == device->paramValue(knxNetLightDeviceAddressParamTypeId).toString()) {
-                    tunnel->switchLight(QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxNetLightDeviceKnxAddressParamTypeId).toString()),
-                                        action.param(knxNetLightPowerActionPowerParamTypeId).value().toBool());
+                    QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxNetLightDeviceKnxAddressParamTypeId).toString());
+                    tunnel->switchLight(knxAddress, action.param(knxNetLightPowerActionPowerParamTypeId).value().toBool());
                 }
             }
         }
-
     }
 
     return DeviceManager::DeviceErrorNoError;
 }
+
+void DevicePluginKnx::onDiscoveryFinished()
+{
+    qCDebug(dcKnx()) << "Discovery finished.";
+
+
+}
+
+
 
 void DevicePluginKnx::onTunnelConnectedChanged()
 {

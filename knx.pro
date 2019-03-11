@@ -18,9 +18,11 @@ message("Building $$deviceplugin$${TARGET}.so")
 
 SOURCES += \
     devicepluginknx.cpp \
-    knxtunnel.cpp
+    knxtunnel.cpp \
+    knxserverdiscovery.cpp
 
 HEADERS += \
     devicepluginknx.h \
-    knxtunnel.h
+    knxtunnel.h \
+    knxserverdiscovery.h
 

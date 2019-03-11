@@ -18,13 +18,16 @@ public:
 
     bool connected() const;
 
-    void connectTunnel();
+    bool connectTunnel();
     void disconnectTunnel();
 
     void switchLight(const QKnxAddress &knxAddress, bool power);
 
 private:
+    QHostAddress m_localAddress;
     QHostAddress m_remoteAddress;
+
+    quint16 m_port = 3671;
     QKnxNetIpTunnel *m_tunnel = nullptr;
     QTimer *m_timer = nullptr;
 
@@ -33,6 +36,7 @@ private:
 
     void collectAddress(const QKnxAddress &address);
     void printFrame(const QKnxLinkLayerFrame &frame);
+    QHostAddress getLocalAddress(const QHostAddress &remoteAddress);
 
 signals:
     void connectedChanged();

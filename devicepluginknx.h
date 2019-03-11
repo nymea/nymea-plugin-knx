@@ -27,6 +27,7 @@
 #include "plugin/deviceplugin.h"
 
 #include "knxtunnel.h"
+#include "knxserverdiscovery.h"
 
 class DevicePluginKnx: public DevicePlugin
 {
@@ -35,7 +36,6 @@ class DevicePluginKnx: public DevicePlugin
     Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginknx.json")
     Q_INTERFACES(DevicePlugin)
 
-
 public:
     explicit DevicePluginKnx();
 
@@ -43,14 +43,20 @@ public:
     void startMonitoringAutoDevices() override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
+    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    KnxServerDiscovery *m_discovery = nullptr;
     QHash<KnxTunnel *, Device *> m_tunnels;
 
+    QHostAddress getLocalAddress(const QHostAddress &remoteAddress);
+
 private slots:
+    void onDiscoveryFinished();
     void onTunnelConnectedChanged();
 
 };

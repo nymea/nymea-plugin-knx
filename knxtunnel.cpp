@@ -2,6 +2,8 @@
 
 #include "extern-plugininfo.h"
 
+#include <QNetworkInterface>
+
 #include <QKnxTpdu>
 #include <QKnx1Bit>
 #include <QKnxLinkLayerFrame>
@@ -18,10 +20,9 @@ KnxTunnel::KnxTunnel(const QHostAddress &remoteAddress, QObject *parent) :
     connect(m_timer, &QTimer::timeout, this, &KnxTunnel::onTimeout);
 
     m_tunnel = new QKnxNetIpTunnel(this);
-    m_tunnel->setLocalAddress(QHostAddress("192.168.8.138"));
     m_tunnel->setLocalPort(0);
-
     m_tunnel->setHeartbeatTimeout(1000);
+
     connect(m_tunnel, &QKnxNetIpTunnel::frameReceived, this, &KnxTunnel::onTunnelFrameReceived);
     connect(m_tunnel, &QKnxNetIpTunnel::connected, this, &KnxTunnel::onTunnelConnected);
     connect(m_tunnel, &QKnxNetIpTunnel::disconnected, this, &KnxTunnel::onTunnelDisconnected);
@@ -43,10 +44,19 @@ bool KnxTunnel::connected() const
     return m_tunnel->state() == QKnxNetIpTunnel::State::Connected;
 }
 
-void KnxTunnel::connectTunnel()
+bool KnxTunnel::connectTunnel()
 {
-    qCDebug(dcKnx()) << "Connecting tunnel to" << m_remoteAddress.toString();
-    m_tunnel->connectToHost(m_remoteAddress, 3671);
+    // Get the local address for this tunnel remote address
+    QHostAddress localAddress = getLocalAddress(m_remoteAddress);
+    if (localAddress.isNull()) {
+        qCWarning(dcKnx()) << "Could connect to " << m_remoteAddress.toString() <<". There is no local interface for this server address. Make sure this device is connected to the correct network.";
+        return false;
+    }
+
+    m_tunnel->setLocalAddress(localAddress);
+    qCDebug(dcKnx()) << "Connecting tunnel to" << m_remoteAddress.toString() << "using" << m_tunnel->localAddress();
+    m_tunnel->connectToHost(m_remoteAddress, m_port);
+    return true;
 }
 
 void KnxTunnel::disconnectTunnel()
@@ -103,6 +113,25 @@ void KnxTunnel::printFrame(const QKnxLinkLayerFrame &frame)
     qCDebug(dcKnx()) << "        Sequence number:" << frame.tpdu().sequenceNumber();
     qCDebug(dcKnx()) << "        Size:" << frame.tpdu().size();
     qCDebug(dcKnx()) << "        Data:" << frame.tpdu().data();
+}
+
+QHostAddress KnxTunnel::getLocalAddress(const QHostAddress &remoteAddress)
+{
+    QHostAddress localAddress;
+    foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
+        qCDebug(dcKnx()) << "Network interface" << interface.name() << interface.type();
+        foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
+            if (addressEntry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+                qCDebug(dcKnx()) << "    - " << addressEntry.ip().toString() << addressEntry.netmask().toString();
+                if (remoteAddress.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
+                    qCDebug(dcKnx()) << "Found local interface address for" << remoteAddress.toString() << "-->" << addressEntry.ip().toString() << interface.name();
+                    localAddress = addressEntry.ip();
+                }
+            }
+        }
+    }
+
+    return localAddress;
 }
 
 void KnxTunnel::switchLight(const QKnxAddress &knxAddress, bool power)
