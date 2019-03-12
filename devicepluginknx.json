@@ -4,18 +4,18 @@
     "id": "cadef44b-223b-405f-a240-3e08fb9540ac",
     "vendors": [
         {
-            "name": "nymea",
-            "displayName": "nymea",
-            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "name": "Knx",
+            "displayName": "Knx",
+            "id": "5971d18f-770c-4bc2-9025-8f2c70196f31",
             "deviceClasses": [
                 {
                     "id": "1322570a-cc4d-417c-90da-f24ccf59ebdb",
                     "name": "knxNetIpServer",
-                    "displayName": "KNX NetIp Server",
+                    "displayName": "KNX NetIp server",
                     "deviceIcon": "Gateway",
                     "setupMethod": "JustAdd",
-                    "createMethods": ["user", "Discovery"],
-                    "interfaces": [ "connectable" ],
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": [ "gateway" ],
                     "basicTags": [ ],
                     "paramTypes": [
                         {
@@ -32,6 +32,13 @@
                             "displayName": "Server port",
                             "type": "uint",
                             "defaultValue": 3671
+                        },
+                        {
+                            "id": "a75955c9-edce-46b2-a95a-1c1ab88007f7",
+                            "name": "knxProjectFile",
+                            "displayName": "Knx project file path",
+                            "type": "QString",
+                            "defaultValue": "/etc/nymea/installation.knxproj"
                         }
                     ],
                     "stateTypes": [
@@ -43,52 +50,41 @@
                             "type": "bool",
                             "defaultValue": false
                         }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "d4523d26-390b-4133-b413-5b8513bd1967",
-                            "name": "addDevice",
-                            "displayName": "Add KNX device",
-                            "paramTypes": [
-                                {
-                                    "id": "041c52e2-623f-4735-97c8-7be4b4bbb612",
-                                    "name": "knxAddress",
-                                    "displayName": "Knx address",
-                                    "type": "QString",
-                                    "defaultValue": "0/0/3"
-                                },
-                                {
-                                    "id": "17ec03ec-25df-4198-be5a-07751ca31f6b",
-                                    "name": "deviceType",
-                                    "displayName": "Device Type",
-                                    "type": "QString",
-                                    "allowedValues": [
-                                        "Light switch"
-                                    ],
-                                    "defaultValue": "Light switch"
-                                }
-                            ]
-                        }
                     ]
                 },
                 {
                     "id": "943e1329-cf5f-4759-94b3-141b6d3ce0ba",
-                    "name": "knxLight",
-                    "displayName": "KNX Light",
+                    "name": "knxSwitch",
+                    "displayName": "Knx switch",
                     "setupMethod": "JustAdd",
                     "createMethods": ["auto"],
-                    "interfaces": [ "light" ],
+                    "interfaces": [ "power", "connectable" ],
                     "basicTags": [ ],
                     "paramTypes": [
+                        {
+                            "id": "dc38bb80-3d84-4f40-8939-4fd1e8573f80",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
                         {
                             "id": "69908c22-7fe1-4573-b3a2-32bf214d38c6",
                             "name": "knxAddress",
                             "displayName": "Knx address",
                             "type": "QString",
-                            "defaultValue": "0/0/3"
+                            "defaultValue": "0/0/1"
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "5453d80d-6a1e-4fe1-b9e0-bc9177ccef55",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
                         {
                             "id": "dc82f8ca-6bb8-4fc6-b46c-2d6a6e6e6d2f",
                             "name": "power",
@@ -98,6 +94,53 @@
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "7fd223fb-002f-4ab7-b77e-1073576f9241",
+                    "name": "knxShutter",
+                    "displayName": "Knx shutter",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "simpleclosable", "connectable" ],
+                    "basicTags": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "9c4c0a21-5a7b-4ab1-a096-6adea3d4a277",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "c81816fa-0394-473c-b0ca-5e74965d1f43",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f9403240-2425-49b1-bd9d-8b0f1c872d8b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "5f1d6f15-6874-485e-a0ca-7bbd397ea25f",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "f3c0f798-ccaa-4943-975d-736dc09f5850",
+                            "name": "close",
+                            "displayName": "Close"
                         }
                     ]
                 }

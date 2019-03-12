@@ -21,18 +21,16 @@ public:
     bool connectTunnel();
     void disconnectTunnel();
 
-    void switchLight(const QKnxAddress &knxAddress, bool power);
+    void switchKnxDevice(const QKnxAddress &knxAddress, bool power);
+    void switchKnxShutter(const QKnxAddress &knxAddress, bool power);
 
 private:
     QHostAddress m_localAddress;
     QHostAddress m_remoteAddress;
-
     quint16 m_port = 3671;
-    QKnxNetIpTunnel *m_tunnel = nullptr;
-    QTimer *m_timer = nullptr;
 
-    QList<QKnxAddress> m_knxDeviceAddresses;
-    QList<QKnxAddress> m_knxGroupAddresses;
+    QTimer *m_timer = nullptr;
+    QKnxNetIpTunnel *m_tunnel = nullptr;
 
     void readManufacturer(const QKnxAddress &knxAddress);
 
@@ -44,6 +42,7 @@ private:
 
 signals:
     void connectedChanged();
+    void frameReceived(const QKnxLinkLayerFrame &frame);
 
 private slots:
     void onTimeout();

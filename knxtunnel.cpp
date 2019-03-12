@@ -65,36 +65,36 @@ void KnxTunnel::disconnectTunnel()
     m_tunnel->disconnectFromHost();
 }
 
-void KnxTunnel::collectAddress(const QKnxAddress &address)
-{
-    bool newAddress = false;
-    switch (address.type()) {
-    case QKnxAddress::Type::Individual:
-        if (!m_knxDeviceAddresses.contains(address)) {
-            m_knxDeviceAddresses.append(address);
-            newAddress = true;
-        }
-        break;
-    case QKnxAddress::Type::Group:
-        if (!m_knxGroupAddresses.contains(address)) {
-            m_knxGroupAddresses.append(address);
-            newAddress = true;
-        }
-        break;
-    }
+//void KnxTunnel::collectAddress(const QKnxAddress &address)
+//{
+//    bool newAddress = false;
+//    switch (address.type()) {
+//    case QKnxAddress::Type::Individual:
+//        if (!m_knxDeviceAddresses.contains(address)) {
+//            m_knxDeviceAddresses.append(address);
+//            newAddress = true;
+//        }
+//        break;
+//    case QKnxAddress::Type::Group:
+//        if (!m_knxGroupAddresses.contains(address)) {
+//            m_knxGroupAddresses.append(address);
+//            newAddress = true;
+//        }
+//        break;
+//    }
 
-    if (newAddress) {
-        qCDebug(dcKnx()) << "Device addresses:";
-        foreach (const QKnxAddress &address, m_knxDeviceAddresses) {
-            qCDebug(dcKnx()) << "    " << address.toString();
-        }
+//    if (newAddress) {
+//        qCDebug(dcKnx()) << "Device addresses:";
+//        foreach (const QKnxAddress &address, m_knxDeviceAddresses) {
+//            qCDebug(dcKnx()) << "    " << address.toString();
+//        }
 
-        qCDebug(dcKnx()) << "Group addresses:";
-        foreach (const QKnxAddress &address, m_knxGroupAddresses) {
-            qCDebug(dcKnx()) << "    " << address.toString();
-        }
-    }
-}
+//        qCDebug(dcKnx()) << "Group addresses:";
+//        foreach (const QKnxAddress &address, m_knxGroupAddresses) {
+//            qCDebug(dcKnx()) << "    " << address.toString();
+//        }
+//    }
+//}
 
 void KnxTunnel::printFrame(const QKnxLinkLayerFrame &frame)
 {
@@ -134,14 +134,32 @@ QHostAddress KnxTunnel::getLocalAddress(const QHostAddress &remoteAddress)
     return localAddress;
 }
 
-void KnxTunnel::switchLight(const QKnxAddress &knxAddress, bool power)
+void KnxTunnel::switchKnxDevice(const QKnxAddress &knxAddress, bool power)
 {
-    qCDebug(dcKnx()) << "Switching light" << knxAddress.toString() << (power ? "ON" : "OFF");
+    qCDebug(dcKnx()) << "Switching" << knxAddress.toString() << (power ? "ON" : "OFF");
 
     QKnxTpdu tpdu;
     tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
     tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueWrite);
     tpdu.setData(QKnxSwitch(power ? QKnxSwitch::State::On : QKnxSwitch::State::Off).bytes());
+
+    QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
+            .setMedium(QKnx::MediumType::NetIP)
+            .setDestinationAddress(knxAddress)
+            .setTpdu(tpdu)
+            .createFrame();
+
+    sendFrame(frame);
+}
+
+void KnxTunnel::switchKnxShutter(const QKnxAddress &knxAddress, bool power)
+{
+    qCDebug(dcKnx()) << "Switching shutter" << knxAddress.toString() << (power ? "UP" : "DOWN");
+
+    QKnxTpdu tpdu;
+    tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
+    tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueWrite);
+    tpdu.setData(QKnxUpDown(power ? QKnxUpDown::State::Up : QKnxUpDown::State::Down).bytes());
 
     QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
             .setMedium(QKnx::MediumType::NetIP)
@@ -189,7 +207,7 @@ void KnxTunnel::onTunnelConnected()
     // Stop the reconnect timer
     m_timer->stop();
 
-    readManufacturer(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")));
+    //readManufacturer(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")));
     //readDeviceInfos(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")));
     //switchLight(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")), false);
 }
@@ -213,8 +231,10 @@ void KnxTunnel::onTunnelFrameReceived(const QKnxLinkLayerFrame &frame)
     qCDebug(dcKnx()) << "<-- Tunnel frame received" << frame;
     printFrame(frame);
 
+    emit frameReceived(frame);
+
     // Store groups and devices for collecting addresses
-    collectAddress(frame.sourceAddress());
-    collectAddress(frame.destinationAddress());
+//    collectAddress(frame.sourceAddress());
+//    collectAddress(frame.destinationAddress());
 }
 

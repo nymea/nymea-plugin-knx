@@ -41,21 +41,26 @@ public:
 
     void init() override;
     void startMonitoringAutoDevices() override;
+
+    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
 
-
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     KnxServerDiscovery *m_discovery = nullptr;
     QHash<KnxTunnel *, Device *> m_tunnels;
 
+    KnxTunnel *getTunnelForDevice(Device *device);
+    void snycProjectFile(Device *knxNetIpServerDevice);
+
 private slots:
     void onDiscoveryFinished();
     void onTunnelConnectedChanged();
+    void onTunnelFrameReceived(const QKnxLinkLayerFrame &frame);
 
 };
 
