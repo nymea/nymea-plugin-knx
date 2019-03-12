@@ -95,14 +95,23 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
 {
     qCDebug(dcKnx()) << "Executing action for device" << device->name() << action.actionTypeId().toString() << action.params();
 
-    if (device->deviceClassId() == knxNetLightDeviceClassId) {
-        if (action.actionTypeId() == knxNetLightPowerActionTypeId) {
-            foreach (KnxTunnel *tunnel, m_tunnels.keys()) {
-                if (tunnel->remoteAddress().toString() == device->paramValue(knxNetLightDeviceAddressParamTypeId).toString()) {
-                    QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxNetLightDeviceKnxAddressParamTypeId).toString());
-                    tunnel->switchLight(knxAddress, action.param(knxNetLightPowerActionPowerParamTypeId).value().toBool());
-                }
-            }
+    if (device->deviceClassId() == knxNetIpServerDeviceClassId) {
+        // Add a new device for this knx netip server
+
+
+
+    }
+
+    if (device->deviceClassId() == knxLightDeviceClassId) {
+        if (action.actionTypeId() == knxLightPowerActionTypeId) {
+            // TODO: get the parent netip server and switch the light with the given address
+
+//            foreach (KnxTunnel *tunnel, m_tunnels.keys()) {
+//                if (tunnel->remoteAddress().toString() == device->paramValue(knxLightDeviceKnxAddressParamTypeId).toString()) {
+//                    QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxLightDeviceKnxAddressParamTypeId).toString());
+//                    tunnel->switchLight(knxAddress, action.param(knxLightPowerActionPowerParamTypeId).value().toBool());
+//                }
+//            }
         }
     }
 

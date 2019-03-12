@@ -34,6 +34,10 @@ private:
     QList<QKnxAddress> m_knxDeviceAddresses;
     QList<QKnxAddress> m_knxGroupAddresses;
 
+    void readManufacturer(const QKnxAddress &knxAddress);
+
+    // Helper
+    void sendFrame(const QKnxLinkLayerFrame &frame);
     void collectAddress(const QKnxAddress &address);
     void printFrame(const QKnxLinkLayerFrame &frame);
     QHostAddress getLocalAddress(const QHostAddress &remoteAddress);

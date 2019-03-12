@@ -146,8 +146,30 @@ void KnxTunnel::switchLight(const QKnxAddress &knxAddress, bool power)
     QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
             .setMedium(QKnx::MediumType::NetIP)
             .setDestinationAddress(knxAddress)
-            .setTpdu(tpdu).createFrame();
+            .setTpdu(tpdu)
+            .createFrame();
 
+    sendFrame(frame);
+}
+
+void KnxTunnel::readManufacturer(const QKnxAddress &knxAddress)
+{
+
+    QKnxTpdu tpdu;
+    tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
+    tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::UserManufacturerInfoRead);
+
+    QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
+            .setMedium(QKnx::MediumType::NetIP)
+            .setDestinationAddress(knxAddress)
+            .setTpdu(tpdu)
+            .createFrame();
+
+    sendFrame(frame);
+}
+
+void KnxTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
+{
     qCDebug(dcKnx()) << "--> Sending frame" << frame;
     printFrame(frame);
     m_tunnel->sendFrame(frame);
@@ -167,6 +189,7 @@ void KnxTunnel::onTunnelConnected()
     // Stop the reconnect timer
     m_timer->stop();
 
+    readManufacturer(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")));
     //readDeviceInfos(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")));
     //switchLight(QKnxAddress(QKnxAddress::Type::Group, QLatin1String("0/0/3")), false);
 }

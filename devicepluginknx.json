@@ -34,7 +34,7 @@
                             "defaultValue": 3671
                         }
                     ],
-                    "stateTypes":[
+                    "stateTypes": [
                         {
                             "id": "aa75257f-45cc-440a-990d-6f3a8f696883",
                             "name": "connected",
@@ -43,25 +43,43 @@
                             "type": "bool",
                             "defaultValue": false
                         }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "d4523d26-390b-4133-b413-5b8513bd1967",
+                            "name": "addDevice",
+                            "displayName": "Add KNX device",
+                            "paramTypes": [
+                                {
+                                    "id": "041c52e2-623f-4735-97c8-7be4b4bbb612",
+                                    "name": "knxAddress",
+                                    "displayName": "Knx address",
+                                    "type": "QString",
+                                    "defaultValue": "0/0/3"
+                                },
+                                {
+                                    "id": "17ec03ec-25df-4198-be5a-07751ca31f6b",
+                                    "name": "deviceType",
+                                    "displayName": "Device Type",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "Light switch"
+                                    ],
+                                    "defaultValue": "Light switch"
+                                }
+                            ]
+                        }
                     ]
                 },
                 {
                     "id": "943e1329-cf5f-4759-94b3-141b6d3ce0ba",
-                    "name": "knxNetLight",
+                    "name": "knxLight",
                     "displayName": "KNX Light",
                     "setupMethod": "JustAdd",
-                    "createMethods": ["auto", "user"],
+                    "createMethods": ["auto"],
                     "interfaces": [ "light" ],
                     "basicTags": [ ],
                     "paramTypes": [
-                        {
-                            "id": "acd8476b-57e8-49f8-9322-58d79c3119a5",
-                            "name": "address",
-                            "displayName": "Server address",
-                            "type": "QString",
-                            "inputType": "IPv4Address",
-                            "defaultValue": "192.168.8.140"
-                        },
                         {
                             "id": "69908c22-7fe1-4573-b3a2-32bf214d38c6",
                             "name": "knxAddress",

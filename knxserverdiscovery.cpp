@@ -70,7 +70,6 @@ void KnxServerDiscovery::printServerInfo(const QKnxNetIpServerInfo &serverInfo)
         else
             qCDebug(dcKnx()) << "      Medium status: Unknown";
     }
-
 }
 
 void KnxServerDiscovery::onDiscoveryAgentErrorOccured(QKnxNetIpServerDiscoveryAgent::Error error)
