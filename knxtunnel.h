@@ -21,8 +21,14 @@ public:
     bool connectTunnel();
     void disconnectTunnel();
 
-    void switchKnxDevice(const QKnxAddress &knxAddress, bool power);
-    void switchKnxShutter(const QKnxAddress &knxAddress, bool power);
+    void sendKnxDpdSwitchFrame(const QKnxAddress &knxAddress, bool power);
+    void sendKnxDpdUpDownFrame(const QKnxAddress &knxAddress, bool status);
+    void sendKnxDpdStepFrame(const QKnxAddress &knxAddress, bool status);
+    void sendKnxDpdScalingFrame(const QKnxAddress &knxAddress, int scale);
+
+    void readKnxDpdSwitchState(const QKnxAddress &knxAddress);
+
+    static void printFrame(const QKnxLinkLayerFrame &frame);
 
 private:
     QHostAddress m_localAddress;
@@ -37,7 +43,6 @@ private:
     // Helper
     void sendFrame(const QKnxLinkLayerFrame &frame);
     void collectAddress(const QKnxAddress &address);
-    void printFrame(const QKnxLinkLayerFrame &frame);
     QHostAddress getLocalAddress(const QHostAddress &remoteAddress);
 
 signals:

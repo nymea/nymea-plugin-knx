@@ -98,7 +98,7 @@ void KnxServerDiscovery::onDiscoveryAgentFinished()
 bool KnxServerDiscovery::startDisovery()
 {
     if (!m_runningDiscoveryAgents.isEmpty()) {
-        qCWarning(dcKnx()) << "Could not start discovery. There are still discovery agents running. Count" << m_runningDiscoveryAgents.count();
+        qCWarning(dcKnx()) << "Could not start discovery. There are still discovery agents running. (" << m_runningDiscoveryAgents.count() << "discoveries )";
         return false;
     }
 
@@ -106,7 +106,7 @@ bool KnxServerDiscovery::startDisovery()
     m_discoveredServers.clear();
 
     foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
-        qCDebug(dcKnx()) << "Checking network interface" << interface.name() << interface.type();
+        //qCDebug(dcKnx()) << "Checking network interface" << interface.name() << interface.type();
         foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
             // If ipv4 and not local host
             if (addressEntry.ip().protocol() == QAbstractSocket::IPv4Protocol && !addressEntry.ip().isLoopback()) {
@@ -120,9 +120,9 @@ bool KnxServerDiscovery::startDisovery()
                 discovery->setResponseType(QKnxNetIpServerDiscoveryAgent::ResponseType::Unicast);
                 discovery->setDiscoveryMode(QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV1 | QKnxNetIpServerDiscoveryAgent::DiscoveryMode::CoreV2);
 
-                m_runningDiscoveryAgents.append(discovery);
                 connect(discovery, &QKnxNetIpServerDiscoveryAgent::finished, this, &KnxServerDiscovery::onDiscoveryAgentFinished);
                 connect(discovery, &QKnxNetIpServerDiscoveryAgent::errorOccurred, this, &KnxServerDiscovery::onDiscoveryAgentErrorOccured);
+                m_runningDiscoveryAgents.append(discovery);
 
                 // Start the discovery
                 discovery->start(m_discoveryTimeout);
