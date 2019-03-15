@@ -2,6 +2,15 @@
     "name": "Knx",
     "displayName": "Knx",
     "id": "cadef44b-223b-405f-a240-3e08fb9540ac",
+    "paramTypes": [
+        {
+            "id": "42f72457-f9d1-4166-95ea-81b8dec768c6",
+            "name": "genericDevicesEnabled",
+            "displayName": "Create generic devices for known DataPoints",
+            "type": "bool",
+            "defaultValue": true
+        }
+    ],
     "vendors": [
         {
             "name": "Knx",
@@ -148,11 +157,6 @@
                             "id": "f3c0f798-ccaa-4943-975d-736dc09f5850",
                             "name": "close",
                             "displayName": "Down"
-                        },
-                        {
-                            "id": "4bca01af-8a15-430a-a63c-92d3d51a69d0",
-                            "name": "read",
-                            "displayName": "Read value"
                         }
                     ]
                 },
@@ -200,6 +204,159 @@
                             "defaultValue": 0,
                             "type": "int",
                             "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "1bfa8fbd-0845-4e85-9c50-cacf22f71363",
+                    "name": "knxGenericTemperatureSensor",
+                    "displayName": "Knx generic temperature sensor",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "temperaturesensor", "connectable" ],
+                    "basicTags": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "51ed9d20-b716-434f-ac00-60f10580fd9e",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "fa55f9de-229c-46ce-aeff-99c3a8c5dad9",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8c9c94e8-90c6-471d-8b5a-63728776223e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d6a04ed7-df21-4bf4-8946-76a2802d7172",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": 0,
+                            "unit": "DegreeCelsius",
+                            "type": "double"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "07b829fb-31b5-4219-8f64-1a11e0176282",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "3d53cf0b-75b3-44a5-b0ec-36b054d9faa9",
+                    "name": "knxGenericLightSensor",
+                    "displayName": "Knx generic light sensor",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "lightsensor", "connectable" ],
+                    "basicTags": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "4f8419ee-d753-4894-b9b4-b1c3a3bc326a",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "0c09a401-fb87-4855-925e-515fb84e06af",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4308c130-0c6f-4b7d-84da-766a1724c2cd",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8bfb2a30-c49f-4a0b-aae1-65b04e0f02d7",
+                            "name": "lightIntensity",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": 0,
+                            "unit": "Lux",
+                            "type": "double"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "96c531b9-9bd8-4e61-8e26-019381f3063d",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "c0e8778a-040a-472c-9eca-d9e21d4e10e6",
+                    "name": "knxGenericWindSpeedSensor",
+                    "displayName": "Knx generic wind speed sensor",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "sensor", "connectable" ],
+                    "basicTags": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "8579633a-834f-4741-8105-bc3db55814b1",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "db454198-a24d-463d-81c4-6260fe93f3bf",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "20cbdab2-0746-4d11-be46-fb1621dfd5ec",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8c4ab56f-7d6f-4ed0-b602-02591cd55583",
+                            "name": "windSpeed",
+                            "displayName": "Wind speed",
+                            "displayNameEvent": "Wind speed changed",
+                            "defaultValue": 0,
+                            "unit": "MeterPerSecond",
+                            "type": "double"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "3d113a52-4514-41d9-9b15-53b361a36f84",
+                            "name": "read",
+                            "displayName": "Read value"
                         }
                     ]
                 },
@@ -376,7 +533,7 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 0,
-                            "type": "uint",
+                            "type": "int",
                             "writable": true
                         }
                     ],

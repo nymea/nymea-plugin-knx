@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QObject>
 
+#include <QQueue>
 #include <QHostAddress>
 #include <QKnxNetIpTunnel>
 
@@ -26,7 +27,11 @@ public:
     void sendKnxDpdStepFrame(const QKnxAddress &knxAddress, bool status);
     void sendKnxDpdScalingFrame(const QKnxAddress &knxAddress, int scale);
 
+    void readKnxGroupValue(const QKnxAddress &knxAddress);
+
     void readKnxDpdSwitchState(const QKnxAddress &knxAddress);
+    void readKnxDpdScalingState(const QKnxAddress &knxAddress);
+    void readKnxDpdTemperatureSensor(const QKnxAddress &knxAddress);
 
     static void printFrame(const QKnxLinkLayerFrame &frame);
 
@@ -36,13 +41,14 @@ private:
     quint16 m_port = 3671;
 
     QTimer *m_timer = nullptr;
+    QTimer *m_queueTimer = nullptr;
     QKnxNetIpTunnel *m_tunnel = nullptr;
 
-    void readManufacturer(const QKnxAddress &knxAddress);
+    QQueue<QKnxLinkLayerFrame> m_sendingQueue;
 
     // Helper
+    void requestSendFrame(const QKnxLinkLayerFrame &frame);
     void sendFrame(const QKnxLinkLayerFrame &frame);
-    void collectAddress(const QKnxAddress &address);
     QHostAddress getLocalAddress(const QHostAddress &remoteAddress);
 
 signals:
@@ -51,6 +57,7 @@ signals:
 
 private slots:
     void onTimeout();
+    void onQueueTimeout();
 
     void onTunnelConnected();
     void onTunnelDisconnected();

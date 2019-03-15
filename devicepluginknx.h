@@ -23,11 +23,13 @@
 #ifndef DEVICEPLUGINKNX_H
 #define DEVICEPLUGINKNX_H
 
+#include "plugintimer.h"
 #include "devicemanager.h"
 #include "plugin/deviceplugin.h"
 
 #include "knxtunnel.h"
 #include "knxserverdiscovery.h"
+
 
 class DevicePluginKnx: public DevicePlugin
 {
@@ -51,13 +53,20 @@ public:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
+
     KnxServerDiscovery *m_discovery = nullptr;
     QHash<KnxTunnel *, Device *> m_tunnels;
 
     KnxTunnel *getTunnelForDevice(Device *device);
-    void snycProjectFile(Device *knxNetIpServerDevice);
+
+    void createGenericDevices(Device *parentDevice);
+    void destroyGenericDevices(Device *parentDevice);
 
 private slots:
+    void onPluginTimerTimeout();
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
+
     void onDiscoveryFinished();
     void onTunnelConnectedChanged();
     void onTunnelFrameReceived(const QKnxLinkLayerFrame &frame);

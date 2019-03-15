@@ -1,4 +1,4 @@
-#include "knxtunnel.h"
+﻿#include "knxtunnel.h"
 
 #include "extern-plugininfo.h"
 
@@ -20,6 +20,12 @@ KnxTunnel::KnxTunnel(const QHostAddress &remoteAddress, QObject *parent) :
     m_timer->setSingleShot(false);
     m_timer->setInterval(5000);
     connect(m_timer, &QTimer::timeout, this, &KnxTunnel::onTimeout);
+
+    m_queueTimer = new QTimer(this);
+    m_queueTimer->setSingleShot(false);
+    m_queueTimer->setInterval(500);
+    connect(m_queueTimer, &QTimer::timeout, this, &KnxTunnel::onQueueTimeout);
+
 
     m_tunnel = new QKnxNetIpTunnel(this);
     m_tunnel->setLocalPort(0);
@@ -82,7 +88,7 @@ void KnxTunnel::sendKnxDpdSwitchFrame(const QKnxAddress &knxAddress, bool power)
             .setTpdu(tpdu)
             .createFrame();
 
-    sendFrame(frame);
+    requestSendFrame(frame);
 }
 
 void KnxTunnel::sendKnxDpdUpDownFrame(const QKnxAddress &knxAddress, bool status)
@@ -100,7 +106,7 @@ void KnxTunnel::sendKnxDpdUpDownFrame(const QKnxAddress &knxAddress, bool status
             .setTpdu(tpdu)
             .createFrame();
 
-    sendFrame(frame);
+    requestSendFrame(frame);
 }
 
 void KnxTunnel::sendKnxDpdStepFrame(const QKnxAddress &knxAddress, bool status)
@@ -118,7 +124,7 @@ void KnxTunnel::sendKnxDpdStepFrame(const QKnxAddress &knxAddress, bool status)
             .setTpdu(tpdu)
             .createFrame();
 
-    sendFrame(frame);
+    requestSendFrame(frame);
 }
 
 void KnxTunnel::sendKnxDpdScalingFrame(const QKnxAddress &knxAddress, int scale)
@@ -136,12 +142,12 @@ void KnxTunnel::sendKnxDpdScalingFrame(const QKnxAddress &knxAddress, int scale)
             .setTpdu(tpdu)
             .createFrame();
 
-    sendFrame(frame);
+    requestSendFrame(frame);
 }
 
-void KnxTunnel::readKnxDpdSwitchState(const QKnxAddress &knxAddress)
+void KnxTunnel::readKnxGroupValue(const QKnxAddress &knxAddress)
 {
-    qCDebug(dcKnx()) << "Read group value" << knxAddress.toString();
+    qCDebug(dcKnx()) << "Read knx group value from group address" << knxAddress.toString();
 
     QKnxTpdu tpdu;
     tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
@@ -154,7 +160,61 @@ void KnxTunnel::readKnxDpdSwitchState(const QKnxAddress &knxAddress)
             .setTpdu(tpdu)
             .createFrame();
 
-    sendFrame(frame);
+    requestSendFrame(frame);
+}
+
+void KnxTunnel::readKnxDpdSwitchState(const QKnxAddress &knxAddress)
+{
+    qCDebug(dcKnx()) << "Read switch group value" << knxAddress.toString();
+
+    QKnxTpdu tpdu;
+    tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
+    tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueRead);
+
+    QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
+            .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
+            .setMedium(QKnx::MediumType::NetIP)
+            .setDestinationAddress(knxAddress)
+            .setTpdu(tpdu)
+            .createFrame();
+
+    requestSendFrame(frame);
+}
+
+void KnxTunnel::readKnxDpdScalingState(const QKnxAddress &knxAddress)
+{
+    qCDebug(dcKnx()) << "Read scaling group value" << knxAddress.toString();
+
+    QKnxTpdu tpdu;
+    tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
+    tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueRead);
+
+    QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
+            .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
+            .setMedium(QKnx::MediumType::NetIP)
+            .setDestinationAddress(knxAddress)
+            .setTpdu(tpdu)
+            .createFrame();
+
+    requestSendFrame(frame);
+}
+
+void KnxTunnel::readKnxDpdTemperatureSensor(const QKnxAddress &knxAddress)
+{
+    qCDebug(dcKnx()) << "Read temperature sensor group value" << knxAddress.toString();
+
+    QKnxTpdu tpdu;
+    tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
+    tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::GroupValueRead);
+
+    QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
+            .setMessageCode(QKnxLinkLayerFrame::MessageCode::DataRequest)
+            .setMedium(QKnx::MediumType::NetIP)
+            .setDestinationAddress(knxAddress)
+            .setTpdu(tpdu)
+            .createFrame();
+
+    requestSendFrame(frame);
 }
 
 void KnxTunnel::printFrame(const QKnxLinkLayerFrame &frame)
@@ -172,6 +232,31 @@ void KnxTunnel::printFrame(const QKnxLinkLayerFrame &frame)
     qCDebug(dcKnx()) << "       " << frame.tpdu().mediumType();
     qCDebug(dcKnx()) << "        Sequence number:" << frame.tpdu().sequenceNumber();
     qCDebug(dcKnx()) << "        Data:" << frame.tpdu().data().toHex().toByteArray();
+}
+
+void KnxTunnel::requestSendFrame(const QKnxLinkLayerFrame &frame)
+{
+    // If the timer is running, enqueue
+    if (m_queueTimer->isActive()) {
+        m_sendingQueue.enqueue(frame);
+        return;
+    }
+
+    // No queue, timer not running, lets send the message directly
+    sendFrame(frame);
+    m_queueTimer->start();
+}
+
+void KnxTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
+{
+    if (!connected()) {
+        qCWarning(dcKnx()) << "Cannot send frame on tunnel" << m_remoteAddress.toString() << " because the tunnel is not connected.";
+        return;
+    }
+
+    qCDebug(dcKnx()) << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss") << "--> Sending frame" << frame << frame.destinationAddress().toString() << frame.tpdu().data().toHex().toByteArray();
+    //printFrame(frame);
+    m_tunnel->sendFrame(frame);
 }
 
 QHostAddress KnxTunnel::getLocalAddress(const QHostAddress &remoteAddress)
@@ -193,33 +278,24 @@ QHostAddress KnxTunnel::getLocalAddress(const QHostAddress &remoteAddress)
     return localAddress;
 }
 
-void KnxTunnel::readManufacturer(const QKnxAddress &knxAddress)
-{
-
-    QKnxTpdu tpdu;
-    tpdu.setTransportControlField(QKnxTpdu::TransportControlField::DataGroup);
-    tpdu.setApplicationControlField(QKnxTpdu::ApplicationControlField::UserManufacturerInfoRead);
-
-    QKnxLinkLayerFrame frame = QKnxLinkLayerFrame::builder()
-            .setMedium(QKnx::MediumType::NetIP)
-            .setDestinationAddress(knxAddress)
-            .setTpdu(tpdu)
-            .createFrame();
-
-    sendFrame(frame);
-}
-
-void KnxTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
-{
-    qCDebug(dcKnx()) << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss") << "--> Sending frame" << frame << frame.destinationAddress().toString() << frame.tpdu().data().toHex().toByteArray();
-    //printFrame(frame);
-    m_tunnel->sendFrame(frame);
-}
-
 void KnxTunnel::onTimeout()
 {
     qCDebug(dcKnx()) << "Tunnel reconnection timeout.";
     connectTunnel();
+}
+
+void KnxTunnel::onQueueTimeout()
+{
+    // If queue is empty, we are don for now.
+    if (m_sendingQueue.isEmpty()) {
+        m_queueTimer->stop();
+        return;
+    }
+
+    // Send next message
+    QKnxLinkLayerFrame frame = m_sendingQueue.dequeue();
+    sendFrame(frame);
+    m_queueTimer->start();
 }
 
 void KnxTunnel::onTunnelConnected()
