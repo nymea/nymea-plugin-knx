@@ -7,8 +7,7 @@ Build-depends: debhelper (>= 9.0.0),
                qt5-qmake:native,
                pkg-config,
                nymea-dev-tools:native,
-               libmaveo-scanner-dev,
-               libqt5serialport5-dev,
+               qtknx5-dev,
 Standards-Version: 3.9.3
 
 Package: nymea-plugin-knx

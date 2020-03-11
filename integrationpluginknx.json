@@ -16,7 +16,7 @@
             "name": "Knx",
             "displayName": "Knx",
             "id": "5971d18f-770c-4bc2-9025-8f2c70196f31",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "1322570a-cc4d-417c-90da-f24ccf59ebdb",
                     "name": "knxNetIpServer",
