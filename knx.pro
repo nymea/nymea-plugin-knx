@@ -21,18 +21,15 @@ isEmpty(PLUGIN_PRI) {
   include($$PLUGIN_PRI)
 }
 
-# Note: requires qtknx
 QT += network knx
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginknx)
-
 SOURCES += \
-    devicepluginknx.cpp \
+    integrationpluginknx.cpp \
     knxtunnel.cpp \
     knxserverdiscovery.cpp
 
 HEADERS += \
-    devicepluginknx.h \
+    integrationpluginknx.h \
     knxtunnel.h \
     knxserverdiscovery.h
 
