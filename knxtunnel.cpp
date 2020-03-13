@@ -1,4 +1,24 @@
-﻿#include "knxtunnel.h"
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+*
+* GNU Lesser General Public License Usage
+* This project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#include "knxtunnel.h"
 
 #include "extern-plugininfo.h"
 
@@ -11,6 +31,8 @@
 #include <QKnxLinkLayerFrame>
 #include <QKnx8BitUnsignedValue>
 #include <QKnxLinkLayerFrameBuilder>
+
+Q_LOGGING_CATEGORY(dcKnxTunnelTraffic, "KnxTunnelTraffic")
 
 KnxTunnel::KnxTunnel(const QHostAddress &remoteAddress, QObject *parent) :
     QObject(parent),
@@ -25,7 +47,6 @@ KnxTunnel::KnxTunnel(const QHostAddress &remoteAddress, QObject *parent) :
     m_queueTimer->setSingleShot(false);
     m_queueTimer->setInterval(500);
     connect(m_queueTimer, &QTimer::timeout, this, &KnxTunnel::onQueueTimeout);
-
 
     m_tunnel = new QKnxNetIpTunnel(this);
     m_tunnel->setLocalPort(0);
@@ -219,19 +240,19 @@ void KnxTunnel::readKnxDpdTemperatureSensor(const QKnxAddress &knxAddress)
 
 void KnxTunnel::printFrame(const QKnxLinkLayerFrame &frame)
 {
-    qCDebug(dcKnx()) << "Frame: (" << frame.sourceAddress().toString() << "-->" << frame.destinationAddress().toString() << ")" << frame;
-    qCDebug(dcKnx()) << "    Message code:" << frame.messageCode();
-    qCDebug(dcKnx()) << "    MediumType" << frame.mediumType();
-    qCDebug(dcKnx()) << "    Control field:" << frame.controlField();
-    qCDebug(dcKnx()) << "    Extended control field:" << frame.extendedControlField();
-    qCDebug(dcKnx()) << "    Additional infos:" << frame.additionalInfos();
-    qCDebug(dcKnx()) << "    Bytes:" << frame.bytes().toHex().toByteArray();
-    qCDebug(dcKnx()) << "    TPDU:" << frame.tpdu() << "Size:" << frame.tpdu().size();
-    qCDebug(dcKnx()) << "       " << frame.tpdu().transportControlField();
-    qCDebug(dcKnx()) << "       " << frame.tpdu().applicationControlField();
-    qCDebug(dcKnx()) << "       " << frame.tpdu().mediumType();
-    qCDebug(dcKnx()) << "        Sequence number:" << frame.tpdu().sequenceNumber();
-    qCDebug(dcKnx()) << "        Data:" << frame.tpdu().data().toHex().toByteArray();
+    qCDebug(dcKnxTunnelTraffic()) << "Frame: (" << frame.sourceAddress().toString() << "-->" << frame.destinationAddress().toString() << ")" << frame;
+    qCDebug(dcKnxTunnelTraffic()) << "    Message code:" << frame.messageCode();
+    qCDebug(dcKnxTunnelTraffic()) << "    MediumType" << frame.mediumType();
+    qCDebug(dcKnxTunnelTraffic()) << "    Control field:" << frame.controlField();
+    qCDebug(dcKnxTunnelTraffic()) << "    Extended control field:" << frame.extendedControlField();
+    qCDebug(dcKnxTunnelTraffic()) << "    Additional infos:" << frame.additionalInfos();
+    qCDebug(dcKnxTunnelTraffic()) << "    Bytes:" << frame.bytes().toHex().toByteArray();
+    qCDebug(dcKnxTunnelTraffic()) << "    TPDU:" << frame.tpdu() << "Size:" << frame.tpdu().size();
+    qCDebug(dcKnxTunnelTraffic()) << "       " << frame.tpdu().transportControlField();
+    qCDebug(dcKnxTunnelTraffic()) << "       " << frame.tpdu().applicationControlField();
+    qCDebug(dcKnxTunnelTraffic()) << "       " << frame.tpdu().mediumType();
+    qCDebug(dcKnxTunnelTraffic()) << "        Sequence number:" << frame.tpdu().sequenceNumber();
+    qCDebug(dcKnxTunnelTraffic()) << "        Data:" << frame.tpdu().data().toHex().toByteArray();
 }
 
 void KnxTunnel::requestSendFrame(const QKnxLinkLayerFrame &frame)
@@ -254,8 +275,8 @@ void KnxTunnel::sendFrame(const QKnxLinkLayerFrame &frame)
         return;
     }
 
-    qCDebug(dcKnx()) << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss") << "--> Sending frame" << frame << frame.destinationAddress().toString() << frame.tpdu().data().toHex().toByteArray();
-    //printFrame(frame);
+    qCDebug(dcKnxTunnelTraffic()) << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss") << "--> Sending frame" << frame << frame.destinationAddress().toString() << frame.tpdu().data().toHex().toByteArray();
+    printFrame(frame);
     m_tunnel->sendFrame(frame);
 }
 
@@ -323,8 +344,8 @@ void KnxTunnel::onTunnelStateChanged(QKnxNetIpEndpointConnection::State state)
 
 void KnxTunnel::onTunnelFrameReceived(const QKnxLinkLayerFrame &frame)
 {
-    qCDebug(dcKnx()) << "<-- Tunnel frame received" << frame;
-    //printFrame(frame);
+    qCDebug(dcKnxTunnelTraffic()) << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss") << "<-- Tunnel frame received" << frame << frame.destinationAddress().toString() << frame.tpdu().data().toHex().toByteArray();
+    printFrame(frame);
     emit frameReceived(frame);
 }
 
