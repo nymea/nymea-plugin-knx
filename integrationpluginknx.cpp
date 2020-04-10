@@ -563,7 +563,7 @@ void IntegrationPluginKnx::executeAction(ThingActionInfo *info)
             int scaled = qRound(percentage * 255.0 / 100.0);
             qCDebug(dcKnx()) << "Percentage" << percentage << "-->" << scaled;
             thing->setStateValue(knxDimmableLightBrightnessStateTypeId, percentage);
-            tunnel->sendKnxDpdScalingFrame(knxScalingAddress, percentage);
+            tunnel->sendKnxDpdScalingFrame(knxScalingAddress, scaled);
         }
 
         if (action.actionTypeId() == knxDimmableLightReadActionTypeId) {
