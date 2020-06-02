@@ -1,3 +1,8 @@
+nymea-plugin-knx (0.0.3) UNRELEASED; urgency=medium
+
+
+ -- Michael Zanetti <michael.zanetti@guh.io>  Wed, 15 Apr 2020 13:15:56 +0200
+
 nymea-plugin-knx (0.0.2) xenial; urgency=medium
 
   [ Michael Zanetti ]
