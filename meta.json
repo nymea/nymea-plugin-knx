@@ -1,0 +1,15 @@
+{
+    "title": "KNX",
+    "tagline": "Connect to KNX IP-Gateways.",
+    "icon": "knx.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "light",
+        "shading",
+        "socket"
+    ]
+}
