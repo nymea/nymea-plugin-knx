@@ -1,3 +1,10 @@
+nymea-plugin-knx (0.0.4) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * Rework readmes
+
+ -- Jenkins <jenkins@nymea.io>  Thu, 09 Jul 2020 22:30:31 +0200
+
 nymea-plugin-knx (0.0.3) xenial; urgency=medium
 
   [ Michael Zanetti ]
