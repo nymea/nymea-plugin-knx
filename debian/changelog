@@ -1,7 +1,9 @@
-nymea-plugin-knx (0.0.5) UNRELEASED; urgency=medium
+nymea-plugin-knx (0.0.5) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * No change rebuild
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Tue, 01 Sep 2020 12:56:51 +0200
+ -- Jenkins <jenkins@nymea.io>  Fri, 23 Oct 2020 13:14:06 +0200
 
 nymea-plugin-knx (0.0.4) xenial; urgency=medium
 
